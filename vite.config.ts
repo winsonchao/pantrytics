@@ -27,15 +27,17 @@ function syncRolldownToRollupPlugin(): Plugin {
   }
 }
 
-export default defineConfig({
+// The Cloudflare plugin runs the dev server inside miniflare, which only works
+// under Node.js. Enable it for builds only so `bun dev` uses Vite's own server.
+export default defineConfig(({ command }) => ({
   server: {
     port: 3000,
   },
   plugins: [
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
+    command === 'build' && cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tailwindcss(),
     tanstackStart(),
     syncRolldownToRollupPlugin(),
     viteReact(),
   ],
-})
+}))
