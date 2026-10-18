@@ -4,12 +4,9 @@
   "name": "pantrytics",
   "compatibility_date": "2025-10-18",
   "compatibility_flags": ["nodejs_compat"],
-  // Main entry is provided by TanStack Start's server-side entry point
-  "main": ".output/server/index.mjs",
-  "assets": {
-    "directory": ".output/public",
-    "binding": "ASSETS"
-  },
+  // Main entry is provided by TanStack Start's server-side entry point.
+  // @cloudflare/vite-plugin resolves it at build time and configures static assets.
+  "main": "@tanstack/react-start/server-entry",
   "observability": {
     "enabled": true
   },

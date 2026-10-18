@@ -2,6 +2,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import { defineConfig, type Plugin } from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { cloudflare } from '@cloudflare/vite-plugin'
 
 /**
  * Compatibility shim: TanStack Start 1.169 internally uses rolldownOptions.input
@@ -26,23 +27,12 @@ function syncRolldownToRollupPlugin(): Plugin {
   }
 }
 
-// Use Cloudflare plugin when building for Workers deployment
-// Installed via: bun add -d @cloudflare/vite-plugin wrangler
-let cloudflarePlugin: Plugin | null = null
-try {
-  // Dynamic import so the app still works locally without the package installed
-  const { cloudflare } = await import('@cloudflare/vite-plugin')
-  cloudflarePlugin = cloudflare({ viteEnvironment: { name: 'ssr' } })
-} catch {
-  // @cloudflare/vite-plugin not installed — running in local/Node.js mode
-}
-
 export default defineConfig({
   server: {
     port: 3000,
   },
   plugins: [
-    ...(cloudflarePlugin ? [cloudflarePlugin] : []),
+    cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tailwindcss(),
     tanstackStart(),
     syncRolldownToRollupPlugin(),
