@@ -1,0 +1,152 @@
+import type { Ingredient, Recipe, UserSettings } from './types'
+
+export const DEFAULT_SETTINGS: UserSettings = {
+  geminiApiKey: '',
+  geminiModel: 'gemini-3.5-flash-lite',
+  storageType: 'localStorage',
+  dietaryPreferences: [],
+  defaultServings: 2,
+}
+
+export const INITIAL_DEMO_INGREDIENTS: Omit<Ingredient, 'id' | 'createdAt' | 'updatedAt'>[] = [
+  {
+    name: '雞蛋',
+    category: 'dairy_egg',
+    quantity: 6,
+    unit: '顆',
+    storageLocation: 'fridge',
+    expiryDate: new Date(Date.now() + 10 * 86400000).toISOString().split('T')[0],
+    notes: '新鮮紅殼雞蛋',
+  },
+  {
+    name: '牛番茄',
+    category: 'vegetable',
+    quantity: 3,
+    unit: '顆',
+    storageLocation: 'fridge',
+    expiryDate: new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
+    notes: '熟成多汁，適合煮湯炒蛋',
+  },
+  {
+    name: '青花菜',
+    category: 'vegetable',
+    quantity: 1,
+    unit: '朵',
+    storageLocation: 'fridge',
+    expiryDate: new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0],
+    notes: '已洗淨，請盡快料理',
+  },
+  {
+    name: '雞胸肉',
+    category: 'meat',
+    quantity: 300,
+    unit: '克',
+    storageLocation: 'freezer',
+    expiryDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+    notes: '低脂高蛋白',
+  },
+  {
+    name: '洋蔥',
+    category: 'vegetable',
+    quantity: 2,
+    unit: '顆',
+    storageLocation: 'room',
+    expiryDate: new Date(Date.now() + 20 * 86400000).toISOString().split('T')[0],
+    notes: '黃洋蔥，甘甜多汁',
+  },
+  {
+    name: '蒜頭',
+    category: 'seasoning',
+    quantity: 1,
+    unit: '球',
+    storageLocation: 'room',
+    expiryDate: new Date(Date.now() + 25 * 86400000).toISOString().split('T')[0],
+    notes: '常備爆香佐料',
+  },
+  {
+    name: '青蔥',
+    category: 'vegetable',
+    quantity: 2,
+    unit: '根',
+    storageLocation: 'fridge',
+    expiryDate: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0], // 2天內即將過期
+    notes: '宜蘭三星蔥，需盡早使用',
+  },
+  {
+    name: '醬油',
+    category: 'seasoning',
+    quantity: 1,
+    unit: '瓶',
+    storageLocation: 'room',
+    notes: '純釀造黑豆醬油',
+  },
+  {
+    name: '橄欖油',
+    category: 'seasoning',
+    quantity: 1,
+    unit: '瓶',
+    storageLocation: 'room',
+    notes: '初榨橄欖油',
+  },
+  {
+    name: '白米',
+    category: 'grain',
+    quantity: 1,
+    unit: '包',
+    storageLocation: 'room',
+    notes: '花東富麗米',
+  },
+]
+
+export const DEMO_SAVED_RECIPES: Recipe[] = [
+  {
+    id: 'demo-recipe-1',
+    title: '經典滑蛋炒番茄',
+    description: '酸甜開胃的家常靈魂料理，雞蛋軟嫩滑潤，番茄濃郁多汁，老少咸宜。',
+    cookingTimeMinutes: 15,
+    difficulty: 'easy',
+    servings: 2,
+    calories: 280,
+    matchedIngredients: ['雞蛋', '牛番茄', '青蔥', '橄欖油', '醬油'],
+    missingIngredients: ['砂糖', '鹽'],
+    ingredientsList: [
+      { name: '雞蛋', amount: '3 顆', isPantryItem: true },
+      { name: '牛番茄', amount: '2 顆（切塊）', isPantryItem: true },
+      { name: '青蔥', amount: '1 根（蔥花）', isPantryItem: true },
+      { name: '橄欖油', amount: '1.5 大匙', isPantryItem: true },
+      { name: '醬油', amount: '1 小匙', isPantryItem: true },
+      { name: '砂糖', amount: '1 小匙', isPantryItem: false },
+      { name: '鹽', amount: '少許', isPantryItem: false },
+    ],
+    prepSteps: [
+      '番茄洗淨切滾刀塊；青蔥切成蔥花（分蔥白與蔥綠）。',
+      '雞蛋打入碗中，加少許鹽與半匙水，均勻打散至起泡。',
+    ],
+    cookingSteps: [
+      {
+        stepNumber: 1,
+        instruction: '熱鍋下 1 大匙油，油熱後倒入蛋液，用鍋鏟由外往內輕推，炒至八分熟呈滑嫩碎蛋狀，起鍋盛盤備用。',
+        tip: '蛋液不要炒太熟，略帶凝固光澤時立即撈起，口感才會滑嫩！',
+        timerSeconds: 60,
+      },
+      {
+        stepNumber: 2,
+        instruction: '原鍋補少許油，加入蔥白爆香，隨後下番茄塊大火翻炒，加入 2 大匙水蓋上鍋蓋悶煮釋放茄紅素。',
+        tip: '番茄要炒出紅油濃汁，酸香味才會濃郁。',
+        timerSeconds: 120,
+      },
+      {
+        stepNumber: 3,
+        instruction: '番茄軟爛出汁後，調入醬油、砂糖、少許鹽炒勻，倒入剛才炒好的滑蛋，快速翻炒 15 秒使蛋吸飽番茄湯汁。',
+        tip: '最後開大火收汁，起鍋前撒上蔥綠即可！',
+        timerSeconds: 30,
+      },
+    ],
+    chefTips: [
+      '番茄炒出紅汁是精華所在，糖可以中和番茄的生酸味，讓口感更圓潤。',
+      '打蛋時加入一小匙水或牛奶，蛋質會更加膨鬆鬆軟。',
+    ],
+    createdAt: new Date().toISOString(),
+    isSaved: true,
+  },
+]
