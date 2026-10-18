@@ -3,18 +3,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import {
   Settings,
   Key,
-  Database,
   Download,
   Upload,
   RotateCcw,
   Trash2,
-  Check,
   AlertCircle,
   ExternalLink,
   ShieldCheck,
   Server,
-  Cloud,
-  Copy,
   Info,
   CheckCircle2,
 } from 'lucide-react'
@@ -25,38 +21,13 @@ export const Route = createFileRoute('/settings')({
   component: SettingsComponent,
 })
 
-const SUPABASE_SCHEMA_SQL = `-- Supabase Table Schema for Pantrytics
-create table if not exists public.ingredients (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) default auth.uid(),
-  name text not null,
-  category text not null,
-  quantity numeric not null default 1,
-  unit text not null default '份',
-  storage_location text not null default 'fridge',
-  expiry_date date,
-  notes text,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
-
-create table if not exists public.saved_recipes (
-  id text primary key,
-  user_id uuid references auth.users(id) default auth.uid(),
-  data jsonb not null,
-  created_at timestamptz default now()
-);`
-
 function SettingsComponent() {
   const [settings, setSettings] = useState<UserSettings | null>(null)
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [modelInput, setModelInput] = useState('gemini-3.5-flash-lite')
   const [showKey, setShowKey] = useState(false)
-  const [supabaseUrl, setSupabaseUrl] = useState('')
-  const [supabaseAnonKey, setSupabaseAnonKey] = useState('')
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [testingKey, setTestingKey] = useState(false)
-  const [copiedSql, setCopiedSql] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -64,8 +35,6 @@ function SettingsComponent() {
       setSettings(s)
       setApiKeyInput(s.geminiApiKey || '')
       setModelInput(s.geminiModel || 'gemini-3.5-flash-lite')
-      setSupabaseUrl(s.supabaseUrl || '')
-      setSupabaseAnonKey(s.supabaseAnonKey || '')
     }
     load()
   }, [])
@@ -75,8 +44,6 @@ function SettingsComponent() {
       const updated = await localStorageAdapter.updateSettings({
         geminiApiKey: apiKeyInput.trim(),
         geminiModel: modelInput.trim() || 'gemini-3.5-flash-lite',
-        supabaseUrl: supabaseUrl.trim(),
-        supabaseAnonKey: supabaseAnonKey.trim(),
       })
       setSettings(updated)
       setStatusMessage({ type: 'success', text: '設定已成功儲存！' })
@@ -166,14 +133,6 @@ function SettingsComponent() {
     }
   }
 
-  const copySql = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(SUPABASE_SCHEMA_SQL)
-      setCopiedSql(true)
-      setTimeout(() => setCopiedSql(false), 2000)
-    }
-  }
-
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-24">
       {/* Page Header */}
@@ -186,7 +145,7 @@ function SettingsComponent() {
           設定與 API 金鑰管理
         </h1>
         <p className="text-sm text-slate-500">
-          管理 Gemini AI 免費方案金鑰、儲存模式切換以及資料備份匯出。
+          管理 Gemini AI 免費方案金鑰以及資料備份匯出。
         </p>
       </div>
 
@@ -334,96 +293,7 @@ function SettingsComponent() {
         </div>
       </div>
 
-      {/* Section 2: Storage Engine & Supabase Migration Ready */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center shrink-0">
-              <Database className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-900">資料儲存架構</h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  目前模式：本地瀏覽器 (LocalStorage)
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                系統已採用 StorageAdapter 抽象層封裝，資料目前零延遲存於本地，未來可隨時無痛切換至 Supabase 雲端！
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Future Supabase Settings Box */}
-        <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Cloud className="w-5 h-5 text-cyan-600" />
-              <h3 className="text-sm font-bold text-slate-800">
-                未來 Supabase 雲端資料庫接入 (預留接口)
-              </h3>
-            </div>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">
-              預留擴充就緒
-            </span>
-          </div>
-
-          <p className="text-xs text-slate-500 leading-relaxed">
-            若未來需要多人共用冰箱、跨手機/電腦即時同步，只需在下方填入您的 Supabase 專案 URL 與 Anon Key，程式碼已內建 <code className="bg-white px-1 py-0.5 rounded border border-slate-200">SupabaseAdapter</code>，可立即無縫對接！
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Supabase URL (選填)
-              </label>
-              <input
-                type="text"
-                placeholder="https://your-project.supabase.co"
-                value={supabaseUrl}
-                onChange={(e) => setSupabaseUrl(e.target.value)}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-orange-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Supabase Anon Key (選填)
-              </label>
-              <input
-                type="password"
-                placeholder="eyJh..."
-                value={supabaseAnonKey}
-                onChange={(e) => setSupabaseAnonKey(e.target.value)}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-orange-500"
-              />
-            </div>
-          </div>
-
-          <div className="pt-2 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={copySql}
-              className="flex items-center gap-1.5 text-xs font-semibold text-cyan-700 hover:text-cyan-900 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 px-3 py-1.5 rounded-xl transition-colors"
-            >
-              {copiedSql ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedSql ? '已複製建表 SQL！' : '複製 Supabase 建表 SQL'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSaveSettings}
-              className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors"
-            >
-              儲存 Supabase 設定
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Section 3: Data Management, Backup & Reset */}
+      {/* Section 2: Data Management, Backup & Reset */}
       <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
