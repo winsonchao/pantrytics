@@ -1,0 +1,9 @@
+# Local Cloudflare Workers development variables & secrets example
+# Copy this file to .dev.vars and add your actual API key:
+#   cp .dev.vars.example .dev.vars
+#
+# Note: In Cloudflare production, configure GEMINI_API_KEY under:
+#   Workers & Pages -> pantrytics -> Settings -> Variables and Secrets -> Add Secret
+
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.5-flash-lite

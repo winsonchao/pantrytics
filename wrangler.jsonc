@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Pantrytics — Cloudflare Workers deployment config
+  "name": "pantrytics",
+  "compatibility_date": "2025-10-18",
+  "compatibility_flags": ["nodejs_compat"],
+  // Main entry is provided by TanStack Start's server-side entry point
+  "main": ".output/server/index.mjs",
+  "assets": {
+    "directory": ".output/public",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Environment variables — set GEMINI_API_KEY via Cloudflare Dashboard or .dev.vars for local dev
+  "vars": {
+    "GEMINI_MODEL": "gemini-3.5-flash-lite"
+  }
+  // GEMINI_API_KEY must be set as a Secret (not a plaintext var) in the Cloudflare Dashboard:
+  //   Workers & Pages → pantrytics → Settings → Variables and Secrets → Add Secret
+  //   Name: GEMINI_API_KEY   Value: AIzaSy...
+}
